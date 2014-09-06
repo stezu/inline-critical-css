@@ -15,6 +15,7 @@ This plugin should open the requested web page in a browser with an average wind
 ## Resources
 
 - [Google PageSpeed Critical CSS](https://developers.google.com/speed/pagespeed/service/PrioritizeCriticalCss)
+- [Google PageSpeed Critical CSS Filter](https://developers.google.com/speed/pagespeed/module/filter-prioritize-critical-css)
 - [Mink Headless Browser](https://github.com/Behat/Mink)
 - [Selenium2 Driver for Mink](https://github.com/Behat/MinkSelenium2Driver)
 - [Penthouse Critical CSS Generator](https://github.com/pocketjoso/penthouse)
