@@ -34,4 +34,5 @@ var criticalCSS = (function () {
         }
         return critical;
     };
+    return exports;
 })();
