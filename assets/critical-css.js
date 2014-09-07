@@ -15,6 +15,10 @@ var criticalCSS = (function () {
             // grab the rules from that particular stylesheet
             rules = stylesheets[i].rules;
 
+            if (!rules) {
+                continue;
+            }
+
             // loop through the rules for this stylesheet
             for (var j = 0; j < rules.length; j++) {
                 rule = rules[j];
@@ -29,12 +33,14 @@ var criticalCSS = (function () {
 
                 // if the selection of elements exists, loop through them and check if
                 // they are 'above the fold'.  if so, add them to our critical string
-                if (el) {
-                    for (var k = 0; k < el.length; k++) {
-                        if (el[k].getBoundingClientRect().top < height) {
-                            critical += rule.cssText;
-                            break;
-                        }
+                if (!el) {
+                    continue;
+                }
+
+                for (var k = 0; k < el.length; k++) {
+                    if (el[k].getBoundingClientRect().top < height) {
+                        critical += rule.cssText;
+                        break;
                     }
                 }
             }
