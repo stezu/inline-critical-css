@@ -55,7 +55,11 @@ var criticalCSS = (function () {
                             subRule = subRules[k];
 
                             if (window.matchMedia(mediaQuery).matches) {
-                                critical += '@media ' + mediaQuery + ' {' + getCriticalSelectors(subRule) + '}';
+                                var criticalSelectors = getCriticalSelectors(subRule);
+
+                                if (criticalSelectors) {
+                                    critical += '@media ' + mediaQuery + ' {' + criticalSelectors + '}';
+                                }
                             }
                         }
                     }
