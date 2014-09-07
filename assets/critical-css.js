@@ -52,10 +52,19 @@ var criticalCSS = (function () {
 
 window.addEventListener('load', function () {
     var style = document.createElement('style'),
-        head = document.getElementsByTagName('head')[0];
+        head = document.getElementsByTagName('head')[0],
+        criticalStyles = criticalCSS.getCriticalStyles();
 
     style.type = 'text/css';
-    style.appendChild(document.createTextNode(criticalCSS.getCriticalStyles()));
+    style.appendChild(document.createTextNode(criticalStyles));
 
     head.insertBefore(style, head.firstChild);
+
+    var r = new XMLHttpRequest();
+    r.open("POST", iccss.ajaxurl, true);
+
+    r.onreadystatechange = function () {
+        if (r.readyState != 4 || r.status != 200) return;
+    };
+    r.send("action=iccss_cache_critical_css&critical_css=" . criticalStyles);
 });

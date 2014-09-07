@@ -12,16 +12,34 @@
  */
 
 class ICCSS {
+	public $transient_location = NULL;
 	public $head_stylesheets = NULL;
+	public $link_items = NULL;
+	public $cached_css = false;
 
 	public function __construct() {
 
-		// Move stylesheets to footer
-		add_action( 'wp_head', array( $this, 'remove_head_stylesheets' ), 2 );
-		add_action( 'wp_footer', array( $this, 'output_footer_stylesheets' ), 1 );
+		$this->transient_location = 'ICCSS_cached_css';
+		$this->cached_css = get_transient( $this->transient_location );
 
-		// Load javascript
-		add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
+		// If the critical css is cached
+		if ( $this->cached_css ) {
+
+			// Move stylesheets to footer
+			add_action( 'wp_head', array( $this, 'remove_head_stylesheets' ), 2 );
+			add_action( 'wp_footer', array( $this, 'output_footer_stylesheets' ), 1 );
+
+			// Add critical css to the head
+			add_action( 'wp_head', array( $this, 'output_critical_css' ), 1 );
+
+		} else {
+
+			// Load javascript
+			add_action( 'wp_enqueue_scripts', array( $this, 'load_scripts' ) );
+
+			// Cache critical css with ajax call
+			add_action( 'wp_ajax_iccss_cache_critical_css', array( $this, 'cache_critical_css' ) );
+		}
 	}
 
 	/**
@@ -32,6 +50,9 @@ class ICCSS {
 	 */
 	public function load_scripts() {
 		wp_enqueue_script( 'critical-css', plugins_url( '/assets/critical-css.js', __FILE__), array(), '0.1.0' );
+		wp_localize_script( 'critical-css', 'iccss', array(
+			'ajaxurl'	=> admin_url('admin-ajax.php'),
+		));
 	}
 
 	/**
@@ -84,6 +105,30 @@ class ICCSS {
 			// Output stylesheets in a noscript tag for fallback
 			echo '<noscript>' . $this->link_items . '</noscript>';
 		}
+	}
+
+	/**
+	 * Cache the returned critical css for the page
+	 *
+	 * @access		public
+	 * @return		void
+	 */
+	public function cache_critical_css() {
+		$critical_css = $_POST['critical_css'];
+		$expires = 604800;
+
+		set_transient( $this->transient_location, $critical_css, $expires );
+		die();
+	}
+
+	/**
+	 * Output the cached css in a style tag
+	 *
+	 * @access		public
+	 * @return		void
+	 */
+	public function output_critical_css() {
+		echo '<style type="text/css">' . $this->cached_css . '</style>';
 	}
 }
 
