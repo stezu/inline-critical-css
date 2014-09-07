@@ -7,26 +7,33 @@ var criticalCSS = (function () {
 
     // a public function that returns a string of our critical styles
     exports.getCriticalStyles = function () {
-        var critical, rules, rule;
+        var critical = '',
+            rules, rule;
 
         // loop through our page's stylesheets
         for (var i = 0; i < stylesheets.length; i++) {
             // grab the rules from that particular stylesheet
             rules = stylesheets[i].rules;
 
-            for (var j = 0; j < stylesheets[i].rules.length; j++) {
-                rule = stylesheets[i].rules[j];
+            // loop through the rules for this stylesheet
+            for (var j = 0; j < rules.length; j++) {
+                rule = rules[j];
 
+                // check that this rule's selector is a valid selector and if so,
+                // set the selection as the el
                 try {
                     var el = document.querySelectorAll(rule.selectorText);
                 } catch (e) {
                     continue;
                 }
 
+                // if the selection of elements exists, loop through them and check if
+                // they are 'above the fold'.  if so, add them to our critical string
                 if (el) {
                     for (var k = 0; k < el.length; k++) {
-                        if (el[k].top < height) {
-                            critical += el[k].cssText;
+                        if (el[k].getBoundingClientRect().top < height) {
+                            critical += rule.cssText;
+                            break;
                         }
                     }
                 }
