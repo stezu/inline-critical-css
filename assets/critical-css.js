@@ -51,20 +51,20 @@ var criticalCSS = (function () {
 })();
 
 window.addEventListener('load', function () {
-    var style = document.createElement('style'),
-        head = document.getElementsByTagName('head')[0],
-        criticalStyles = criticalCSS.getCriticalStyles();
+    var criticalStyles = criticalCSS.getCriticalStyles(),
+        http = new XMLHttpRequest();
 
-    style.type = 'text/css';
-    style.appendChild(document.createTextNode(criticalStyles));
+    // open the post connection to the server
+    http.open("POST", iccss.ajaxurl, true);
 
-    head.insertBefore(style, head.firstChild);
+    // let them know we're sending data
+    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-    var r = new XMLHttpRequest();
-    r.open("POST", iccss.ajaxurl, true);
-
-    r.onreadystatechange = function () {
-        if (r.readyState != 4 || r.status != 200) return;
+    // something that's in every demo
+    http.onreadystatechange = function () {
+        if (http.readyState != 4 || http.status != 200) return;
     };
-    r.send("action=iccss_cache_critical_css&critical_css=" . criticalStyles);
+
+    // send the data with the appropriate action that wordpress is expecting
+    http.send("action=iccss_cache_critical_css&critical_css=" + criticalStyles);
 });

@@ -114,7 +114,7 @@ class ICCSS {
 	 * @return		void
 	 */
 	public function cache_critical_css() {
-		$critical_css = $_POST['critical_css'];
+		$critical_css = $_REQUEST['critical_css'];
 		$expires = 604800;
 
 		set_transient( $this->transient_location, $critical_css, $expires );
