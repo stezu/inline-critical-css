@@ -49,3 +49,11 @@ var criticalCSS = (function () {
     };
     return exports;
 })();
+
+window.addEventListener('load', function () {
+    var style = document.createElement('style');
+    style.type = 'text/css';
+    style.appendChild(document.createTextNode(criticalCSS.getCriticalStyles()));
+
+    document.getElementsByTagName('head')[0].appendChild(style);
+});
