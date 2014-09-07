@@ -26,7 +26,7 @@ class ICCSS {
 		if ( $this->cached_css ) {
 
 			// Move stylesheets to footer
-			add_action( 'wp_head', array( $this, 'remove_head_stylesheets' ), 2 );
+			add_action( 'wp_head', array( $this, 'remove_head_stylesheets' ), 1 );
 			add_action( 'wp_footer', array( $this, 'output_footer_stylesheets' ), 1 );
 
 			// Add critical css to the head
@@ -39,6 +39,7 @@ class ICCSS {
 
 			// Cache critical css with ajax call
 			add_action( 'wp_ajax_iccss_cache_critical_css', array( $this, 'cache_critical_css' ) );
+			add_action( 'wp_ajax_nopriv_iccss_cache_critical_css', array( $this, 'cache_critical_css' ) );
 		}
 	}
 
@@ -51,7 +52,7 @@ class ICCSS {
 	public function load_scripts() {
 		wp_enqueue_script( 'critical-css', plugins_url( '/assets/critical-css.js', __FILE__), array(), '0.1.0' );
 		wp_localize_script( 'critical-css', 'iccss', array(
-			'ajaxurl'	=> admin_url('admin-ajax.php'),
+			'ajaxurl'	=> admin_url( 'admin-ajax.php' ),
 		));
 	}
 
@@ -91,7 +92,7 @@ class ICCSS {
 					raf = requestAnimationFrame || mozRequestAnimationFrame ||
 						  webkitRequestAnimationFrame || msRequestAnimationFrame,
 					cb = function () {
-						document.getElementsByTagName("head")[0].insertAdjacentHTML('beforeend', links);
+						document.getElementsByTagName("body")[0].insertAdjacentHTML('beforeend', links);
 					};
 
 				if (raf) {
@@ -128,7 +129,7 @@ class ICCSS {
 	 * @return		void
 	 */
 	public function output_critical_css() {
-		echo '<style type="text/css">' . $this->cached_css . '</style>';
+		echo '<style type="text/css" class="iccss_critical_css">' . $this->cached_css . '</style>';
 	}
 }
 
