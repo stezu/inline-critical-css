@@ -47,6 +47,18 @@ var criticalCSS = (function () {
         }
         return critical;
     };
+
+    // determine the filesize in bytes of an arbitrary string
+    exports.getFileSize = function (string) {
+
+        // if string is not set, return the filesize of the critical css
+        if (!string) {
+            string = this.getCriticalStyles();
+        }
+
+        return encodeURI(string).split(/%..|./).length - 1;
+    };
+
     return exports;
 })();
 
