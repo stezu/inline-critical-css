@@ -5,46 +5,69 @@ var criticalCSS = (function () {
     var stylesheets = document.styleSheets,
         height = window.innerHeight;
 
+    // loop through the rules for this stylesheet
+    function getCriticalSelectors(rule) {
+        var styles = '';
+
+        // check that this rule's selector is a valid selector and if so,
+        // set the selection as the el
+        try {
+            var el = document.querySelectorAll(rule.selectorText);
+        } catch (e) {
+            return styles;
+        }
+
+        // if the selection of elements exists, loop through them and check if
+        // they are 'above the fold'.  if so, add them to our critical string
+        if (el) {
+            for (var l = 0; l < el.length; l++) {
+                if (el[l].getBoundingClientRect().top < height) {
+                    styles += rule.cssText;
+                    break;
+                }
+            }
+        }
+
+        return styles;
+    }
+
     // a public function that returns a string of our critical styles
     exports.getCriticalStyles = function () {
         var critical = '',
-            rules, rule;
+            rules, rule, subRules, subRule;
 
         // loop through our page's stylesheets
         for (var i = 0; i < stylesheets.length; i++) {
             // grab the rules from that particular stylesheet
             rules = stylesheets[i].rules;
 
-            if (!rules) {
-                continue;
-            }
+            if (rules && window.matchMedia(stylesheets[i].media.mediaText).matches) {
+                for (var j = 0; j < rules.length; j++) {
+                    rule = rules[j];
 
-            // loop through the rules for this stylesheet
-            for (var j = 0; j < rules.length; j++) {
-                rule = rules[j];
+                    // if this is a media query
+                    if (rule.cssRules) {
+                        subRules = rule.cssRules;
 
-                // check that this rule's selector is a valid selector and if so,
-                // set the selection as the el
-                try {
-                    var el = document.querySelectorAll(rule.selectorText);
-                } catch (e) {
-                    continue;
-                }
+                        for (var k = 0; k < subRules.length; k++) {
+                            var mediaQuery = rule.media.mediaText;
 
-                // if the selection of elements exists, loop through them and check if
-                // they are 'above the fold'.  if so, add them to our critical string
-                if (!el) {
-                    continue;
-                }
+                            subRule = subRules[k];
 
-                for (var k = 0; k < el.length; k++) {
-                    if (el[k].getBoundingClientRect().top < height) {
-                        critical += rule.cssText;
-                        break;
+                            if (window.matchMedia(mediaQuery).matches) {
+                                critical += '@media ' + mediaQuery + ' {' + getCriticalSelectors(subRule) + '}';
+                            }
+                        }
+                    }
+
+                    // this is a standard rule
+                    else {
+                        critical += getCriticalSelectors(rule);
                     }
                 }
             }
         }
+
         return critical;
     };
 
