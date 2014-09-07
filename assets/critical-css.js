@@ -41,7 +41,7 @@ var criticalCSS = (function () {
             // grab the rules from that particular stylesheet
             rules = stylesheets[i].rules;
 
-            if (rules && window.matchMedia(stylesheets[i].media.mediaText).matches) {
+            if (rules && stylesheets[i].ownerNode.tagName.toLowerCase() === 'link' && window.matchMedia(stylesheets[i].media.mediaText).matches) {
                 for (var j = 0; j < rules.length; j++) {
                     rule = rules[j];
 
