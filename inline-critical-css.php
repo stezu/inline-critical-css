@@ -31,7 +31,7 @@ class ICCSS {
 	 * @return		void
 	 */
 	public function load_scripts() {
-		wp_enqueue_script( 'critical-css', 'assets/critical-css.js', array(), '0.1.0', true );
+		wp_enqueue_script( 'critical-css', plugins_url( 'assets/critical-css.js', __FILE__ ), array(), '0.1.0', true );
 	}
 }
 
