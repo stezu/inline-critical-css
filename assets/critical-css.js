@@ -51,9 +51,11 @@ var criticalCSS = (function () {
 })();
 
 window.addEventListener('load', function () {
-    var style = document.createElement('style');
+    var style = document.createElement('style'),
+        head = document.getElementsByTagName('head')[0];
+
     style.type = 'text/css';
     style.appendChild(document.createTextNode(criticalCSS.getCriticalStyles()));
 
-    document.getElementsByTagName('head')[0].appendChild(style);
+    head.insertBefore(style, head.firstChild);
 });
