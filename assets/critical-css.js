@@ -38,40 +38,52 @@ var criticalCSS = (function () {
 
         // loop through our page's stylesheets
         for (var i = 0; i < stylesheets.length; i++) {
+
+            try {
+
             // grab the rules from that particular stylesheet
-            rules = stylesheets[i].rules;
+            rules = stylesheets[i].cssRules;
 
-            if (rules && stylesheets[i].ownerNode.tagName.toLowerCase() === 'link' && window.matchMedia(stylesheets[i].media.mediaText).matches) {
-                for (var j = 0; j < rules.length; j++) {
-                    rule = rules[j];
+                if (rules && stylesheets[i].ownerNode.tagName.toLowerCase() === 'link' && window.matchMedia(stylesheets[i].media.mediaText).matches) {
+                    for (var j = 0; j < rules.length; j++) {
+                        rule = rules[j];
 
-                    // if this is a media query
-                    if (rule.cssRules) {
-                        subRules = rule.cssRules;
+                        // if this is a media query
+                        if (rule.cssRules) {
+                            subRules = rule.cssRules;
 
-                        for (var k = 0; k < subRules.length; k++) {
-                            var mediaQuery = rule.media.mediaText;
+                            for (var k = 0; k < subRules.length; k++) {
 
-                            subRule = subRules[k];
-
-                            if (window.matchMedia(mediaQuery).matches) {
-                                var criticalSelectors = getCriticalSelectors(subRule);
-
-                                if (criticalSelectors) {
-                                    critical += '@media ' + mediaQuery + ' {' + criticalSelectors + '}';
+                                if(rule.media && rule.media.mediaText)
+                                {
+                                    var mediaQuery = rule.media.mediaText;
+        
+                                    subRule = subRules[k];
+        
+                                    if (window.matchMedia(mediaQuery).matches) {
+                                        var criticalSelectors = getCriticalSelectors(subRule);
+        
+                                        if (criticalSelectors) {
+                                            critical += '@media ' + mediaQuery + ' {' + criticalSelectors + '}';
+                                        }
+                                    }
                                 }
+
                             }
                         }
-                    }
 
-                    // this is a standard rule
-                    else {
-                        critical += getCriticalSelectors(rule);
+                        // this is a standard rule
+                        else {
+                            critical += getCriticalSelectors(rule);
+                        }
                     }
                 }
             }
+            catch(e)
+            {
+                console.log(e);
+            }
         }
-
         return critical;
     };
 
